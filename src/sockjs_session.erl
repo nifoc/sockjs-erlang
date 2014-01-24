@@ -165,6 +165,7 @@ emit(What, State = #session{callback = Callback,
                 case What of
                     init         -> Callback:sockjs_init(Handle, UserState);
                     {recv, Data} -> Callback:sockjs_handle(Handle, Data, UserState);
+                    {info, Info} -> Callback:sockjs_info(Handle, Info, UserState);
                     closed       -> Callback:sockjs_terminate(Handle, UserState)
                 end
         end,
@@ -291,6 +292,10 @@ handle_info(session_timeout, State = #session{response_pid = undefined}) ->
 handle_info(heartbeat_triggered, State = #session{response_pid = RPid}) when RPid =/= undefined ->
     RPid ! go,
     {noreply, State#session{heartbeat_tref = triggered}};
+
+handle_info({handler, Info}, State) ->
+    State2 = emit({info, Info}, State),
+    {noreply, State2};
 
 handle_info(Info, State) ->
     {stop, {odd_info, Info}, State}.
