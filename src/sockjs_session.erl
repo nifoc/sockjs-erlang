@@ -297,6 +297,9 @@ handle_info({handler, Info}, State) ->
     State2 = emit({info, Info}, State),
     {noreply, State2};
 
+handle_info({ssl_closed, {sslsocket, _Socket}}, State) ->
+    {stop, normal, State};
+
 handle_info(Info, State) ->
     {stop, {odd_info, Info}, State}.
 
