@@ -298,7 +298,7 @@ handle_info({handler, Info}, State) ->
     {noreply, State2};
 
 handle_info({ssl_closed, _Socket}, State) ->
-    {stop, normal, State};
+    {stop, normal, State#session{response_pid = undefined}};
 
 handle_info(Info, State) ->
     {stop, {odd_info, Info}, State}.
